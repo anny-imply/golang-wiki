@@ -27,6 +27,8 @@ const createBoard = () => {
     row.forEach(() => {
       const cellElem = document.createElement("div");
       cellElem.addEventListener("click", () => {
+        // do nothing if cell has already been clicked
+        if (!cellElem.classList.contains("covered")) return;
         cellElem.classList.remove("covered");
         if (newVal === 0 || newVal === 1) {
           cellElem.classList.add("expose");

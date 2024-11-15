@@ -21,10 +21,10 @@ body {
   background-size: 80px;
   /* background: green; */
   border-radius: 4px;
-  cursor: pointer;
 }
 .covered {
   background: green;
+  cursor: pointer;
 }
 .expose {
   background: lightgreen;
