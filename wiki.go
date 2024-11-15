@@ -12,7 +12,10 @@ type Page struct {
 	Title string
 	Body  []byte
 }
+
 var dataPath = "data/"
+var templatePath = "tmpl/"
+
 func (p *Page) save() error {
 	filename := dataPath + p.Title + ".txt"
 	return os.WriteFile(filename, p.Body, 0600)
@@ -55,7 +58,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
 
-var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+var templates = template.Must(template.ParseFiles(templatePath + "edit.html", templatePath + "view.html"))
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
