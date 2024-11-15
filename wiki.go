@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 )
 
 type Page struct {
@@ -58,7 +59,7 @@ func saveHandler(w http.ResponseWriter, r *http.Request, title string) {
 	http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
 
-var templates = template.Must(template.ParseFiles(templatePath + "edit.html", templatePath + "view.html"))
+var templates = template.Must(template.ParseFiles(templatePath+"edit.html", templatePath+"view.html"))
 
 func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
 	err := templates.ExecuteTemplate(w, tmpl+".html", p)
@@ -80,10 +81,31 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, string)) http.Handl
 	}
 }
 
+func frontHandler(w http.ResponseWriter, r *http.Request) {
+	files, err := os.ReadDir(dataPath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var products []string
+	for _, file := range files {
+		if !file.IsDir() {
+			products = append(products, strings.Split(file.Name(), ".")[0])
+		}
+	}
+
+	tmpl, err := template.ParseFiles(templatePath + "products.html")
+	if err != nil {
+		panic(err)
+	}
+
+	err = tmpl.Execute(w, products)
+}
+
 func main() {
+	http.HandleFunc("/", frontHandler)
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
-
 	log.Fatal(http.ListenAndServe(":9000", nil))
 }
