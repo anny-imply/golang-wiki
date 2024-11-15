@@ -3,6 +3,7 @@ document.getElementById("again").addEventListener("click", () => {
 });
 
 const container = document.getElementById("grid");
+const gameOverTextElem = document.getElementById("gameOver");
 const setLifeCount = (count) => {
   document.getElementById("lifeCount").textContent = count;
 };
@@ -62,16 +63,13 @@ const createBoard = () => {
 
 const endGame = (didWin) => {
   container.classList.add("disable");
-  document.getElementById("gameOver").parentElement.classList.remove("hide");
-  document.getElementById("gameOver").textContent = didWin
-    ? "YOU WON :)"
-    : "YOU LOST :(";
-  document.getElementById("gameOver").classList.remove("hide");
+  gameOverTextElem.parentElement.classList.remove("hide");
+  gameOverTextElem.textContent = didWin ? "YOU WON :)" : "YOU LOST :(";
 };
 const reset = () => {
   createBoard();
-  document.getElementById("gameOver").parentElement.classList.add("hide");
-  document.getElementById("grid").classList.remove("disable");
+  gameOverTextElem.parentElement.classList.add("hide");
+  container.classList.remove("disable");
 };
 
 reset();
