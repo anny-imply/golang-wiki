@@ -12,15 +12,15 @@ type Page struct {
 	Title string
 	Body  []byte
 }
-
+var dataPath = "data/"
 func (p *Page) save() error {
-	filename := p.Title + ".txt"
+	filename := dataPath + p.Title + ".txt"
 	return os.WriteFile(filename, p.Body, 0600)
 }
 
 func loadPage(title string) (*Page, error) {
 	filename := title + ".txt"
-	body, err := os.ReadFile(filename)
+	body, err := os.ReadFile(dataPath + filename)
 	if err != nil {
 		return nil, err
 	}
