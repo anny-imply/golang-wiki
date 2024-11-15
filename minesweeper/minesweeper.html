@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>JS Bin</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        width: 400px;
+
+        margin: 20px auto;
+      }
+      .cell {
+        /* 400px of parent container / # of cells per row */
+        height: 80px;
+        border: 1px solid brown;
+        background-size: 80px;
+        /* background: green; */
+        border-radius: 4px;
+      }
+      .covered {
+        background: green;
+      }
+      .expose {
+        background: lightgreen;
+      }
+      .bomb {
+        background-image: url("bomb.png");
+      }
+      .boon {
+        background-image: url("moneybag.png");
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid"></div>
+  </body>
+  <script>
+    const grid = new Array(5).fill(0).map(() => new Array(5).fill(0));
+    const container = document.getElementById("grid");
+    // 0 is regular, 1 is boon, 2 is bomb
+    const getBoonOrBomb = () => getRandomIntInclusive(0, 2);
+
+    function getRandomIntInclusive(min, max) {
+      const minCeiled = Math.ceil(min);
+      const maxFloored = Math.floor(max);
+      return Math.floor(
+        Math.random() * (maxFloored - minCeiled + 1) + minCeiled
+      ); // The maximum is inclusive and the minimum is inclusive
+    }
+
+    const values = new Set();
+    grid.forEach((row) => {
+      const rowElem = document.createElement("div");
+      row.forEach((e) => {
+        const cellElem = document.createElement("div");
+        cellElem.addEventListener("click", () => {
+          cellElem.classList.remove("covered");
+          if (newVal === 0) {
+            cellElem.classList.add("expose");
+          } else if (newVal === 1) {
+            cellElem.classList.add("boon");
+          } else if (newVal === 2) {
+            cellElem.classList.add("bomb");
+          }
+        });
+        cellElem.classList.add("cell");
+        cellElem.classList.add("covered");
+        let newVal = getBoonOrBomb();
+        while (values.has(newVal)) {
+          newVal = getBoonOrBomb();
+        }
+
+        //      cellElem.textContent = newVal
+        rowElem.appendChild(cellElem);
+      });
+      container.appendChild(rowElem);
+    });
+  </script>
+</html>
