@@ -20,6 +20,7 @@ body {
   border: 1px solid brown;
   background-size: 80px;
   border-radius: 4px;
+  color: green;
 }
 .covered {
   background: green;
