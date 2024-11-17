@@ -4,24 +4,33 @@ document.getElementById("again").addEventListener("click", () => {
 
 const container = document.getElementById("grid");
 const gameOverTextElem = document.getElementById("gameOver");
-
+const BOMB_INT = 1;
 const getRandomIntInclusive = (min, max) => {
   const minCeiled = Math.ceil(min);
   const maxFloored = Math.floor(max);
   return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled); // The maximum is inclusive and the minimum is inclusive
 };
-const getNormalOrBomb = () => getRandomIntInclusive(0, 2);
-
-// num is either 2 for bomb, or 0 to negative for normal
+const getNormalOrBomb = () => getRandomIntInclusive(0, BOMB_INT);
+const showCell = (cell) => {
+  cell.classList.remove("covered");
+  if (!cell.textContent) {
+    cell.classList.add("bomb");
+  } else {
+    cell.classList.add("expose");
+    if (cell.textContent === "0") {
+      // hide 0
+      cell.style.color = "lightgreen";
+    }
+  }
+};
+// num is positive for bomb, or 0 to negative for normal
 const checkCell = (cell) => {
   // do nothing if cell has already been clicked
   if (!cell.classList.contains("covered")) return;
   cell.classList.remove("covered");
+  showCell(cell);
   if (!cell.textContent) {
-    cell.classList.add("bomb");
-    endGame(false);
-  } else {
-    cell.classList.add("expose");
+    return endGame(false);
   }
 
   // win iff when the covered cells are all bombs
@@ -35,35 +44,42 @@ const checkCell = (cell) => {
 };
 
 const getUpdatedNum = ({ num, grid, rowIndex, colIndex }) => {
-  if (num === 2) return num;
+  if (num === BOMB_INT) return num;
   // regular
   num = 0;
   // compute nearby bombs
-  if (rowIndex > 0 && grid[rowIndex - 1][colIndex] === 2) {
+  if (rowIndex > 0 && grid[rowIndex - 1][colIndex] === BOMB_INT) {
     num -= 1;
   }
 
-  if (rowIndex + 1 < grid.length && grid[rowIndex + 1][colIndex] === 2) {
+  if (rowIndex + 1 < grid.length && grid[rowIndex + 1][colIndex] === BOMB_INT) {
     num -= 1;
   }
 
-  if (colIndex > 0 && grid[rowIndex][colIndex - 1] === 2) {
+  if (colIndex > 0 && grid[rowIndex][colIndex - 1] === BOMB_INT) {
     num -= 1;
   }
 
-  if (colIndex + 1 < grid[0].length && grid[rowIndex][colIndex + 1] === 2) {
+  if (
+    colIndex + 1 < grid[0].length &&
+    grid[rowIndex][colIndex + 1] === BOMB_INT
+  ) {
     num -= 1;
   }
 
   // diagonals
-  if (rowIndex > 0 && colIndex > 0 && grid[rowIndex - 1][colIndex - 1] === 2) {
+  if (
+    rowIndex > 0 &&
+    colIndex > 0 &&
+    grid[rowIndex - 1][colIndex - 1] === BOMB_INT
+  ) {
     num -= 1;
   }
 
   if (
     colIndex + 1 < grid[0].length &&
     rowIndex + 1 < grid.length &&
-    grid[rowIndex + 1][colIndex + 1] === 2
+    grid[rowIndex + 1][colIndex + 1] === BOMB_INT
   ) {
     num -= 1;
   }
@@ -71,7 +87,7 @@ const getUpdatedNum = ({ num, grid, rowIndex, colIndex }) => {
   if (
     colIndex + 1 < grid[0].length &&
     rowIndex > 0 &&
-    grid[rowIndex - 1][colIndex + 1] === 2
+    grid[rowIndex - 1][colIndex + 1] === BOMB_INT
   ) {
     num -= 1;
   }
@@ -79,7 +95,7 @@ const getUpdatedNum = ({ num, grid, rowIndex, colIndex }) => {
   if (
     rowIndex + 1 < grid.length &&
     colIndex > 0 &&
-    grid[rowIndex + 1][colIndex - 1] === 2
+    grid[rowIndex + 1][colIndex - 1] === BOMB_INT
   ) {
     num -= 1;
   }
@@ -89,8 +105,6 @@ const getUpdatedNum = ({ num, grid, rowIndex, colIndex }) => {
 const createBoard = () => {
   container.innerHTML = "";
   const grid = new Array(5).fill(0).map(() => new Array(5).fill(0));
-  // 0, 1 is regular,  2 is bomb
-
   const values = new Set();
   grid.forEach((row, index) => {
     row.forEach(() => {
@@ -113,8 +127,8 @@ const createBoard = () => {
         colIndex,
       });
       // normal cells have number, bomb does not
-      if (updatedNum !== 2) {
-        cellElem.textContent = updatedNum;
+      if (updatedNum !== BOMB_INT) {
+        cellElem.textContent = Math.abs(updatedNum);
         grid[rowIndex][colIndex] = updatedNum;
       }
       cellElem.addEventListener("click", (e) => {
@@ -149,6 +163,9 @@ const endGame = (didWin) => {
   container.classList.add("disable");
   gameOverTextElem.parentElement.classList.remove("hide");
   gameOverTextElem.textContent = didWin ? "YOU WON :)" : "YOU LOST :(";
+  for (let e of document.querySelectorAll(".covered")) {
+    showCell(e);
+  }
 };
 const reset = () => {
   createBoard();

@@ -27,6 +27,7 @@ body {
   cursor: pointer;
 }
 .expose {
+  font-size: 68px;
   background: lightgreen;
 }
 .bomb {
