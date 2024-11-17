@@ -114,7 +114,7 @@ const floodNormalCell = (cell) => {
   // cell facing down
   showCell(cell);
   if (cell.textContent !== "0") return;
-  // cell facing down that are 0
+  // only recurse for normal cells
   if (cell.nextSibling) {
     floodNormalCell(cell.nextSibling);
   }
