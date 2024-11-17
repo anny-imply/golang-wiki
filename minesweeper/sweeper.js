@@ -27,8 +27,13 @@ const showCell = (cell) => {
 const checkCell = (cell) => {
   // do nothing if cell has already been clicked
   if (!cell.classList.contains("covered")) return;
-  cell.classList.remove("covered");
-  showCell(cell);
+  if (cell.textContent === "0") {
+    floodNormalCell(cell);
+  } else {
+    cell.classList.remove("covered");
+    showCell(cell);
+  }
+
   if (!cell.textContent) {
     return endGame(false);
   }
@@ -102,6 +107,30 @@ const getUpdatedNum = ({ num, grid, rowIndex, colIndex }) => {
   return num;
 };
 
+const floodNormalCell = (cell) => {
+  if (!cell || !cell.classList.contains("covered")) {
+    return;
+  }
+  // cell facing down
+  showCell(cell);
+  if (cell.textContent !== "0") return;
+  // cell facing down that are 0
+  if (cell.nextSibling) {
+    floodNormalCell(cell.nextSibling);
+  }
+  if (cell.previousSibling) {
+    floodNormalCell(cell.previousSibling);
+  }
+  const index = Array.from(cell.parentElement.children).indexOf(cell);
+  if (cell.parentElement.previousSibling) {
+    floodNormalCell(
+      Array.from(cell.parentElement.previousSibling.children)[index]
+    );
+  }
+  if (cell.parentElement.nextSibling) {
+    floodNormalCell(Array.from(cell.parentElement.nextSibling.children)[index]);
+  }
+};
 const createBoard = () => {
   container.innerHTML = "";
   const grid = new Array(5).fill(0).map(() => new Array(5).fill(0));
@@ -133,22 +162,6 @@ const createBoard = () => {
       }
       cellElem.addEventListener("click", (e) => {
         checkCell(e.target);
-        if (updatedNum === 0) {
-          let rowI = rowIndex - 1;
-          while (rowI > 0 && grid[rowI][colIndex] === 0) {
-            const neighbor =
-              document.querySelectorAll(".row")[rowI].childNodes[colIndex];
-            checkCell(neighbor);
-            rowI--;
-          }
-          rowI = rowIndex + 1;
-          while (rowI < grid.length && grid[rowI][colIndex] === 0) {
-            const neighbor =
-              document.querySelectorAll(".row")[rowI].childNodes[colIndex];
-            checkCell(neighbor);
-            rowI++;
-          }
-        }
       });
       cellElem.classList.add("cell");
 
