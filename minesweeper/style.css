@@ -33,9 +33,6 @@ body {
 .bomb {
   background-image: url("bomb.png");
 }
-.boon {
-  background-image: url("moneybag.png");
-}
 .hide {
   display: none;
 }
